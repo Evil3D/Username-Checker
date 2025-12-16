@@ -2,8 +2,8 @@
 
 A username availability checker that focuses on correctness over guesswork.
 
-This project checks whether a username is actually usable for signup on supported platforms. Unlike many existing tools, it does **not** rely solely on profile lookups,
-which are often unreliable.
+This project checks whether a username is actually usable for signup on supported platforms.  
+Unlike many existing tools, it does **not** rely solely on profile lookups, which are often unreliable.
 
 ---
 
@@ -12,7 +12,7 @@ which are often unreliable.
 This project was mainly inspired by how inaccurate some username checkers are
 (e.g. [Instant Username](https://instantusername.com)).
 
-Many of them determine availability by checking whether a public profile exists.
+Many of them determine availability by checking whether a public profile exists.  
 That approach breaks down on platforms where:
 - terminated accounts exist
 - usernames are reserved
@@ -27,7 +27,7 @@ This endpoint returns the same `404` for:
 - never-registered usernames (available)
 - terminated usernames (unavailable)
 
-As a result, taken and available usernames can be incorrectly reported (or treated
+As a result, taken and available usernames can be incorrectly reported (or treated  
 as the same state), which makes the result useless for actual signup.
 
 ---
@@ -37,7 +37,7 @@ as the same state), which makes the result useless for actual signup.
 Whenever possible, this project uses **actual signup / validation APIs** instead of
 profile lookups.
 
-Signup APIs generally provide much more reliable information about whether a
+Signup APIs generally provide much more reliable information about whether a  
 username can be registered.
 
 For platforms where:
@@ -53,9 +53,9 @@ a profile lookup may still be used as a fallback.
 Using signup and validation APIs is **significantly more reliable** than
 profile-based checks.
 
-These endpoints are typically designed to validate usernames during account
-creation and therefore provide clearer and more accurate signals than public
-profile lookups. In many cases, they are also subject to less aggressive rate
+These endpoints are typically designed to validate usernames during account  
+creation and therefore provide clearer and more accurate signals than public  
+profile lookups. In many cases, they are also subject to less aggressive rate  
 limiting than large-scale profile scraping.
 
 However, no method is perfect. Accuracy may still be affected by:
@@ -63,7 +63,7 @@ However, no method is perfect. Accuracy may still be affected by:
 - platform changes
 - anti-bot or abuse prevention systems
 
-When a definitive answer cannot be determined, the checker should return an
+When a definitive answer cannot be determined, the checker should return an  
 **uncertain** result rather than guessing.
 
 ---
@@ -72,15 +72,15 @@ When a definitive answer cannot be determined, the checker should return an
 
 This project is **not intended for large-scale or production use**.
 
-Checks are performed on a best-effort basis, and no additional safeguards are
-implemented for API failures, timeouts, or unexpected responses. If a platform’s
-API fails or behaves unexpectedly, the result may be incomplete or marked as
+Checks are performed on a best-effort basis, and no additional safeguards are  
+implemented for API failures, timeouts, or unexpected responses. If a platform’s  
+API fails or behaves unexpectedly, the result may be incomplete or marked as  
 uncertain.
 
-This is an intentional design choice to keep the project simple and focused on
+This is an intentional design choice to keep the project simple and focused on  
 accuracy when APIs respond as expected.
 
-If you need production-grade reliability, retries, or high-volume usage, this
+If you need production-grade reliability, retries, or high-volume usage, this  
 project is probably not what you’re looking for.
 
 ---
@@ -93,3 +93,10 @@ If you find:
 - a better API approach
 
 please open a GitHub issue or submit a pull request. Contributions are welcome.
+
+---
+
+## Summary
+
+A username availability checker that prioritizes accuracy by using signup and validation APIs instead of unreliable profile lookups.  
+Designed for correctness over scale, with best-effort results and clear uncertainty handling.
