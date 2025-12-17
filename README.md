@@ -1,87 +1,78 @@
-# Username Checker
+## Why this tool exists
 
-A username availability checker that focuses on correctness over guesswork.
+I originally wanted a simple username lookup tool.
+If you search *“username lookup”*, the top result is [**Instant Username Search**](https://instantusername.com), which at first glance looks clean and reliable.
 
-This project checks whether a username is actually usable for signup on supported platforms.  
-Unlike many existing tools, it does **not** rely solely on profile lookups, which are often unreliable.
+Then I read their [Terms of Service](https://instantusername.com/terms) — which explicitly state that they are **not liable for incorrect results**. That alone isn’t a dealbreaker, but it made me curious enough to inspect how their checks actually work.
 
----
+The Roblox checker was the breaking point.
 
-## Why this exists
+Their lookup links to:
 
-This project was mainly inspired by how inaccurate some username checkers are
-(e.g. [Instant Username](https://instantusername.com)).
+```
+https://www.roblox.com/user.aspx?username=<username>
+```
 
-Many of them determine availability by checking whether a public profile exists.  
-That approach breaks down on platforms where:
-- terminated accounts exist
-- usernames are reserved
-- profile endpoints return the same response for multiple states
+This endpoint returns the **same response** for:
 
-### Example: Roblox
+* available usernames
+* terminated usernames
+* certain invalid usernames
 
-Some services check:
-```https://www.roblox.com/user.aspx?username=<username>```
+In other words:
+**it cannot distinguish between “claimable” and “not claimable”.**
 
-This endpoint returns the same `404` for:
-- never-registered usernames (available)
-- terminated usernames (unavailable)
-
-As a result, taken and available usernames can be incorrectly reported (or treated  
-as the same state), which makes the result useless for actual signup.
+As a result, the tool effectively reports **every username as taken**, regardless of reality. That isn’t unreliable - it’s structurally incorrect.
 
 ---
 
-## How this project works
+## Why profile lookup is the wrong approach
 
-Whenever possible, this project uses **actual signup / validation APIs** instead of
-profile lookups.
+Profile-based username checks are fundamentally flawed because:
 
-Signup APIs generally provide much more reliable information about whether a  
-username can be registered.
+* Websites can (and do) return false responses when they detect scraping
+* Profile pages often return identical responses for multiple states
+* Existence ≠ availability (terminated, reserved, blocked, etc.)
+* You cannot verify whether the site is telling the truth
 
-For platforms where:
-- signup APIs are unavailable, or
-- validation is too complex,
-
-a profile lookup may still be used as a fallback.
+If an endpoint cannot *theoretically* differentiate between states, no amount of retries or proxying will fix that.
 
 ---
 
-## Accuracy
+## Why this tool uses signup APIs instead
 
-Using signup and validation APIs is **significantly more reliable** than
-profile-based checks.
+This tool uses **signup / username validation APIs** wherever possible, because:
 
-These endpoints are typically designed to validate usernames during account  
-creation and therefore provide clearer and more accurate signals than public  
-profile lookups. In many cases, they are also subject to less aggressive rate  
-limiting than large-scale profile scraping.
+1. **They are more reliable than profile lookup**
+2. **They are authoritative**
 
-However, no method is perfect. Accuracy may still be affected by:
-- rate limits
-- platform changes
-- anti-bot or abuse prevention systems
+Signup APIs are constrained by a hard requirement:
 
-When a definitive answer cannot be determined, the checker should return an  
-**uncertain** result rather than guessing.
+> They cannot lie consistently without breaking account creation.
+
+If a signup API falsely reports usernames as available or unavailable:
+
+* either everyone could claim any username
+* or nobody could sign up at all
+
+Both outcomes would make the signup system unusable.
+
+So when a signup API gives a definitive answer, that answer is real.
+
+If a signup check fails, that’s not treated as “unknown” or guessed - it’s treated as **unavailable**, and the endpoint gets investigated or fixed later.
 
 ---
 
-## Scope & Limitations
+## Design philosophy
 
-This project is **not intended for large-scale or production use**.
+* Only return **“yes”** when the platform explicitly confirms availability
+* Everything else is **“no”**
+* No guessing
+* No smoothing
+* No profile scraping unless there is *literally no alternative*
+* If an API changes and breaks, it gets fixed - not hidden
 
-Checks are performed on a best-effort basis, and no additional safeguards are  
-implemented for API failures, timeouts, or unexpected responses. If a platform’s  
-API fails or behaves unexpectedly, the result may be incomplete or marked as  
-uncertain.
-
-This is an intentional design choice to keep the project simple and focused on  
-accuracy when APIs respond as expected.
-
-If you need production-grade reliability, retries, or high-volume usage, this  
-project is probably not what you’re looking for.
+This tool prioritizes **truth over UX**, even if that means fewer “yes” results.
 
 ---
 
@@ -93,10 +84,3 @@ If you find:
 - a better API approach
 
 please open a GitHub issue or submit a pull request. Contributions are welcome.
-
----
-
-## Summary
-
-A username availability checker that prioritizes accuracy by using signup and validation APIs instead of unreliable profile lookups.  
-Designed for correctness over scale, with best-effort results and clear uncertainty handling.
