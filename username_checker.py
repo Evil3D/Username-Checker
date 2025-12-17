@@ -192,6 +192,31 @@ def check_lichess(username):
     r = requests.get(url)
     if r.ok:
         return r.text.strip().lower() == "false"
+    
+def check_tryhackme(username):
+    url = f"https://tryhackme.com/api/v2/users/availability?username={username}"
+    r = requests.get(url)
+    if r.ok:
+        data = r.json()
+        return data.get("data", {}).get("available") == True
+    return False
+
+def check_hypixel_forums(username):
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "content": username,
+        "_xfResponseType": "json",
+        "_xfWithData": 1,
+        "_xfRequestUri": "/register/"
+    }
+    url = "https://hypixel.net/misc/validate-username"
+    r = requests.post(url, json=payload, headers=headers)
+    if r.ok:
+        return r.json().get("inputValid") == True
+    return False
 
 def check_all_old(username):
     results = {
@@ -231,6 +256,8 @@ def check_all(username):
         "Modrinth": check_modrinth,
         "Chess.com": check_chess,
         "Lichess": check_lichess,
+        "TryHackMe": check_tryhackme,
+        "Hypixel Forums": check_hypixel_forums,
     }
 
     with ThreadPoolExecutor(max_workers=len(checks)) as executor:
@@ -271,15 +298,17 @@ def main():
         print("15. Modrinth")
         print("16. Chess.com")
         print("17. Lichess")
-        print("18. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("19. Exit")
-        choice = input("Choose an option (1-19): ").strip()
+        print("18. TryHackMe")
+        print("19. Hypixel Forums")
+        print("20. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("21. Exit")
+        choice = input("Choose an option (1-21): ").strip()
 
-        if choice == '19':
+        if choice == '21':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 19)):
+        if choice in map(str, range(1, 21)):
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -323,6 +352,10 @@ def main():
                 elif choice == '17':
                     print("[✓]" if check_lichess(username) else "[✗]", f"Lichess: {username}")
                 elif choice == '18':
+                    print("[✓]" if check_tryhackme(username) else "[✗]", f"TryHackMe: {username}")
+                elif choice == '19':
+                    print("[✓]" if check_hypixel_forums(username) else "[✗]", f"Hypixel Forums: {username}")
+                elif choice == '20':
                     check_all(username)
         else:
             print("Invalid input.")
