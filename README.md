@@ -84,3 +84,9 @@ If you find:
 - a better API approach
 
 please open a GitHub issue or submit a pull request. Contributions are welcome.
+
+---
+
+## Extra stuffs
+I probably wont do like releases on this unless if it's just the python script, since i'm on linux and i don't really want to try to compile for windows (or linux ngl) so yea
+Also i think the requests library (``` pip install requests ```) is the only one you need to install so far.
