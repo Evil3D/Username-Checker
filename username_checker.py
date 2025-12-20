@@ -1,5 +1,6 @@
 import requests, datetime, random, xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed # type: ignore
+from colorama import Fore
 
 def generate_random_birthday():
     year = random.randint(1950, 2005)
@@ -271,9 +272,9 @@ def check_all(username):
             try:
                 available = future.result()
                 if available:
-                    print(f"[✓] {platform}: '{username}' is available")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET + f"{platform}: '{username}' is available")
                 else:
-                    print(f"[✗] {platform}: '{username}' is unavailable")
+                    print(Fore.RED + "[✗]" + Fore.RESET + f"{platform}: '{username}' is unavailable")
             except Exception as e:
                 print(f"[!] {platform}: error ({e})")
 
@@ -318,43 +319,43 @@ def main():
                     continue
 
                 if choice == '1':
-                    print("[✓]" if check_discord(username) else "[✗]", f"Discord: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_discord(username) else Fore.RED + "[✗]" + Fore.RESET, f"Discord: {username}")
                 elif choice == '2':
-                    print("[✓]" if check_roblox(username) else "[✗]", f"Roblox: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_roblox(username) else Fore.RED + "[✗]" + Fore.RESET, f"Roblox: {username}")
                 elif choice == '3':
-                    print("[✓]" if check_neocities(username) else "[✗]", f"Neocities: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_neocities(username) else Fore.RED + "[✗]" + Fore.RESET, f"Neocities: {username}")
                 elif choice == '4':
-                    print("[✓]" if check_github(username) else "[✗]", f"GitHub: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_github(username) else Fore.RED + "[✗]" + Fore.RESET, f"GitHub: {username}")
                 elif choice == '5':
-                    print("[✓]" if check_devto(username) else "[✗]", f"Dev.to: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_devto(username) else Fore.RED + "[✗]" + Fore.RESET, f"Dev.to: {username}")
                 elif choice == '6':
-                    print("[✓]" if check_replit(username) else "[✗]", f"Replit: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_replit(username) else Fore.RED + "[✗]" + Fore.RESET, f"Replit: {username}")
                 elif choice == '7':
-                    print("[✓]" if check_gitlab(username) else "[✗]", f"GitLab: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_gitlab(username) else Fore.RED + "[✗]" + Fore.RESET, f"GitLab: {username}")
                 elif choice == '8':
-                    print("[✓]" if check_soundcloud(username) else "[✗]", f"SoundCloud: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_soundcloud(username) else Fore.RED + "[✗]" + Fore.RESET, f"SoundCloud: {username}")
                 elif choice == '9':
-                    print("[✓]" if check_patreon_creator(username) else "[✗]", f"Patreon Creator: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_patreon_creator(username) else Fore.RED + "[✗]" + Fore.RESET, f"Patreon Creator: {username}")
                 elif choice == '10':
-                    print("[✓]" if check_steam_vanity(username) else "[✗]", f"Steam Vanity: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_steam_vanity(username) else Fore.RED + "[✗]" + Fore.RESET, f"Steam Vanity: {username}")
                 elif choice == '11':
-                    print("[✓]" if check_steam_group(username) else "[✗]", f"Steam Group: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_steam_group(username) else Fore.RED + "[✗]" + Fore.RESET, f"Steam Group: {username}")
                 elif choice == '12':
-                    print("[✓]" if check_twitter_x(username) else "[✗]", f"Twitter/X: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_twitter_x(username) else Fore.RED + "[✗]" + Fore.RESET, f"Twitter/X: {username}")
                 elif choice == '13':
-                    print("[✓]" if check_minecraft_username(username) else "[✗]", f"Minecraft Username: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_minecraft_username(username) else Fore.RED + "[✗]" + Fore.RESET, f"Minecraft Username: {username}")
                 elif choice == '14':
-                    print("[✓]" if check_fiverr(username) else "[✗]", f"Fiverr: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_fiverr(username) else Fore.RED + "[✗]" + Fore.RESET, f"Fiverr: {username}")
                 elif choice == '15':
-                    print("[✓]" if check_modrinth(username) else "[✗]", f"Modrinth: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_modrinth(username) else Fore.RED + "[✗]" + Fore.RESET, f"Modrinth: {username}")
                 elif choice == '16':
-                    print("[✓]" if check_chess(username) else "[✗]", f"Chess.com: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_chess(username) else Fore.RED + "[✗]" + Fore.RESET, f"Chess.com: {username}")
                 elif choice == '17':
-                    print("[✓]" if check_lichess(username) else "[✗]", f"Lichess: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_lichess(username) else Fore.RED + "[✗]" + Fore.RESET, f"Lichess: {username}")
                 elif choice == '18':
-                    print("[✓]" if check_tryhackme(username) else "[✗]", f"TryHackMe: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_tryhackme(username) else Fore.RED + "[✗]" + Fore.RESET, f"TryHackMe: {username}")
                 elif choice == '19':
-                    print("[✓]" if check_hypixel_forums(username) else "[✗]", f"Hypixel Forums: {username}")
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_hypixel_forums(username) else Fore.RED + "[✗]" + Fore.RESET, f"Hypixel Forums: {username}")
                 elif choice == '20':
                     check_all(username)
         else:
