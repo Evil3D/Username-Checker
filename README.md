@@ -111,7 +111,7 @@ If ya read to the end, here are all the dependencies: (this exists cause i wante
 
 ---
 
-## Thy Backyard.. nono wait choose 1, Blacklist or Graveyard.. not 'Backyard', eh whatever
+## Thy Backyard.. nono wait choose 1, Blacklist or Graveyard.. not 'Backyard'.. WHY NO-
 This is where the rejected platforms go. If a site is here, it’s because their API is a nightmare, a privacy hazard, or just plain stupid.  
 
 **Tiktok** <- Their signup endpoint is a privacy dumpster fire. It demands ~30 parameters including your Geo-IP, OS version, and browser metadata just to check a string. They basically try to fingerprint your soul before you even click "Sign Up."  
