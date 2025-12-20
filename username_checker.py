@@ -219,6 +219,24 @@ def check_hypixel_forums(username):
         return r.json().get("inputValid") == True
     return False
 
+def check_letterboxd(username):
+    url = f"https://letterboxd.com/s/checkusername?q={username}"
+    r = requests.get(url)
+    if r.ok:
+        return r.json.get("data", {}).get("result") == "AVAILABLE"
+    return False
+
+def check_buymeacoffee(username):
+    payload = {
+        "project_slug": username
+    }
+    url = "https://app.buymeacoffee.com/api/v1/check_availability"
+    r = requests.post(url, json=payload)
+    if r.ok:
+        return r.json().get("data", {}).get("available") == True
+    return False
+    
+
 def check_all_old(username):
     results = {
         "Discord": check_discord(username),
@@ -259,6 +277,8 @@ def check_all(username):
         "Lichess": check_lichess,
         "TryHackMe": check_tryhackme,
         "Hypixel Forums": check_hypixel_forums,
+        "Letterboxd": check_letterboxd,
+        "Buy Me a Coffee": check_buymeacoffee,
     }
 
     with ThreadPoolExecutor(max_workers=len(checks)) as executor:
@@ -301,15 +321,17 @@ def main():
         print("17. Lichess")
         print("18. TryHackMe")
         print("19. Hypixel Forums")
-        print("20. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("21. Exit")
-        choice = input("Choose an option (1-21): ").strip()
+        print("20. Letterboxd")
+        print("21. Buy Me a Coffee")
+        print("22. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("23. Exit")
+        choice = input("Choose an option (1-23): ").strip()
 
-        if choice == '21':
+        if choice == '23':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 21)):
+        if choice in map(str, range(1, 23)):
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -357,6 +379,10 @@ def main():
                 elif choice == '19':
                     print(Fore.GREEN + "[✓]" + Fore.RESET if check_hypixel_forums(username) else Fore.RED + "[✗]" + Fore.RESET, f"Hypixel Forums: {username}")
                 elif choice == '20':
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_letterboxd(username) else Fore.RED + "[✗]" + Fore.RESET, f"Letterboxd: {username}")
+                elif choice == '21':
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_buymeacoffee(username) else Fore.RED + "[✗]" + Fore.RESET, f"Buy Me a Coffee: {username}")
+                elif choice == '22':
                     check_all(username)
         else:
             print("Invalid input.")
