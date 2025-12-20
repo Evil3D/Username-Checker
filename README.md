@@ -22,7 +22,7 @@ This endpoint returns the **same response** for:
 In other words:
 **it cannot distinguish between “claimable” and “not claimable”.**
 
-As a result, the tool effectively reports **every username as taken**, regardless of reality. That isn’t unreliable - it’s structurally incorrect.
+As a result, the tool effectively reports *every username* as taken, **regardless of reality. That isn’t unreliable - it’s structurally incorrect**.
 
 ---
 
@@ -88,11 +88,11 @@ please open a GitHub issue or submit a pull request. Contributions are welcome.
 ---
 
 ## Extra stuffs
-I probably wont do like releases on this unless if it's just the python script, since i'm on linux and i don't really want to try to compile for windows (or linux ngl) so yea  
+I probably wont do like releases on this unless if it's just the python script, since i'm on linux and i don't really want to try to compile for windows (or linux ngl) so yea, and i also wanna keep it open-source without 2 ways of running it.  
 
 Also i think the requests library (``` pip install requests ```) (no it's not, check dependencies) is the only one you need to install so far.  
 
-Oh also this project most likely will never be a publicly accessible website (or something alike) since it'd probably be very prone to timeouts/ratelimits and i dont like caching results (cause real-time results are better, even if slower).
+Oh also this project most likely will never be a publicly accessible website (or something alike) since it'd probably be very prone to timeouts/ratelimits and i dont like caching results (cause real-time results are better, even if slower). Also it's like this so you can run it yourself, also therefore there's not much risk for like my ip (example) to get banned if you like spam one or multiple of the APIs.
 
 ---
 
@@ -100,3 +100,11 @@ Oh also this project most likely will never be a publicly accessible website (or
 If ya read to the end, here are all the dependencies:  
 [Colorama](https://pypi.org/project/colorama/) - ``` pip install colorama ```  
 [Requests](https://pypi.org/project/requests/) - ``` pip install requests ```
+
+---
+
+## Quick Start
+(cause why not ig)
+1. Clone the repo. (or just download the uh python script.. actually cloning might be better cause i added a requirements.txt.)
+2. Install dependencies: `pip install requests colorama` (or ``` pip install -r requirements.txt ``` if you cloned the repo)
+3. Run: `python username_checker.py`
