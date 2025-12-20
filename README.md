@@ -97,7 +97,7 @@ Oh also this project most likely will never be a publicly accessible website (or
 ---
 
 ## Dependencies
-If ya read to the end, here are all the dependencies:  
+If ya read to the end, here are all the dependencies: (this exists cause i wanted it to and also links the projects to their pypi.org pages.)  
 [Colorama](https://pypi.org/project/colorama/) - ``` pip install colorama ```  
 [Requests](https://pypi.org/project/requests/) - ``` pip install requests ```
 
