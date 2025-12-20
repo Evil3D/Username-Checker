@@ -108,3 +108,11 @@ If ya read to the end, here are all the dependencies: (this exists cause i wante
 1. Clone the repo. (or just download the uh python script.. actually cloning might be better cause i added a requirements.txt.)
 2. Install dependencies: `pip install requests colorama` (or ``` pip install -r requirements.txt ``` if you cloned the repo)
 3. Run: `python username_checker.py`
+
+---
+
+## Thy Backyard.. nono wait choose 1, Blacklist or Graveyard.. not 'Backyard', eh whatever
+This is where the rejected platforms go. If a site is here, it’s because their API is a nightmare, a privacy hazard, or just plain stupid.  
+
+**Tiktok** <- Their signup endpoint is a privacy dumpster fire. It demands ~30 parameters including your Geo-IP, OS version, and browser metadata just to check a string. They basically try to fingerprint your soul before you even click "Sign Up."  
+**Instagram/Facebook/Meta apps** <- They use GraphQL endpoints that are notoriously unstable for simple scripting. They also hide behind aggressive bot-detection (Cloudflare/Akamai) that returns a `401 Unauthorized` the second it detects you aren't a "real" high-trust browser.
