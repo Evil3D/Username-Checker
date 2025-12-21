@@ -193,6 +193,7 @@ def check_lichess(username):
     r = requests.get(url)
     if r.ok:
         return r.text.strip().lower() == "false"
+    return False
     
 def check_tryhackme(username):
     url = f"https://tryhackme.com/api/v2/users/availability?username={username}"
@@ -248,6 +249,11 @@ def check_scratch(username):
         return r.json().get("msg") == "valid username"
     return False
 
+def check_dockerhub(username):
+    url = f"https://hub.docker.com/v2/users/{username}"
+    r = requests.get(url)
+    return r.status_code == 404 and r.json().get("message") == "User not found"
+
 def check_all_old(username):
     results = {
         "Discord": check_discord(username),
@@ -292,6 +298,7 @@ def check_all(username):
         "Buy Me a Coffee": check_buymeacoffee,
         "DailyMotion": check_dailymotion,
         "Scratch": check_scratch,
+        "Docker Hub": check_dockerhub,
     }
 
     with ThreadPoolExecutor(max_workers=len(checks)) as executor:
@@ -305,9 +312,9 @@ def check_all(username):
             try:
                 available = future.result()
                 if available:
-                    print(Fore.GREEN + "[✓]" + Fore.RESET + f"{platform}: '{username}' is available")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f"{platform}: '{username}' is Available")
                 else:
-                    print(Fore.RED + "[✗]" + Fore.RESET + f"{platform}: '{username}' is unavailable")
+                    print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f"{platform}: '{username}' is Unavailable")
             except Exception as e:
                 print(f"[!] {platform}: error ({e})")
 
@@ -317,6 +324,11 @@ def main():
         print("FYI: this username checker uses SignUp API Endpoints (mostly),")
         print("therefore it may say that the username is taken/unavailable,")
         print("when the user profile for said username doesn't exist.")
+        print("")
+        print(Fore.LIGHTGREEN_EX + "[✓] " + Fore.RESET + "<- Available")
+        print(Fore.LIGHTRED_EX + "[✗] " + Fore.RESET + "<- Unavailable")
+        print("[!] <- Issue with the platform or code")
+        print("")
         print("1. Discord")
         print("2. Roblox")
         print("3. Neocities")
@@ -340,15 +352,16 @@ def main():
         print("21. Buy Me a Coffee")
         print("22. DailyMotion")
         print("23. Scratch (mit.edu)")
-        print("24. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("25. Exit")
-        choice = input("Choose an option (1-25): ").strip()
+        print("24. Docker Hub")
+        print("25. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("26. Exit")
+        choice = input("Choose an option (1-26): ").strip()
 
-        if choice == '25':
+        if choice == '26':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 25)):
+        if choice in map(str, range(1, 26)):
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -358,52 +371,54 @@ def main():
                     continue
 
                 if choice == '1':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_discord(username) else Fore.RED + "[✗]" + Fore.RESET, f"Discord: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_discord(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Discord: {username}")
                 elif choice == '2':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_roblox(username) else Fore.RED + "[✗]" + Fore.RESET, f"Roblox: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_roblox(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Roblox: {username}")
                 elif choice == '3':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_neocities(username) else Fore.RED + "[✗]" + Fore.RESET, f"Neocities: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_neocities(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Neocities: {username}")
                 elif choice == '4':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_github(username) else Fore.RED + "[✗]" + Fore.RESET, f"GitHub: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_github(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"GitHub: {username}")
                 elif choice == '5':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_devto(username) else Fore.RED + "[✗]" + Fore.RESET, f"Dev.to: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_devto(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Dev.to: {username}")
                 elif choice == '6':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_replit(username) else Fore.RED + "[✗]" + Fore.RESET, f"Replit: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_replit(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Replit: {username}")
                 elif choice == '7':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_gitlab(username) else Fore.RED + "[✗]" + Fore.RESET, f"GitLab: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_gitlab(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"GitLab: {username}")
                 elif choice == '8':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_soundcloud(username) else Fore.RED + "[✗]" + Fore.RESET, f"SoundCloud: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_soundcloud(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"SoundCloud: {username}")
                 elif choice == '9':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_patreon_creator(username) else Fore.RED + "[✗]" + Fore.RESET, f"Patreon Creator: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_patreon_creator(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Patreon Creator: {username}")
                 elif choice == '10':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_steam_vanity(username) else Fore.RED + "[✗]" + Fore.RESET, f"Steam Vanity: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_steam_vanity(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Steam Vanity: {username}")
                 elif choice == '11':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_steam_group(username) else Fore.RED + "[✗]" + Fore.RESET, f"Steam Group: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_steam_group(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Steam Group: {username}")
                 elif choice == '12':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_twitter_x(username) else Fore.RED + "[✗]" + Fore.RESET, f"Twitter/X: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_twitter_x(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Twitter/X: {username}")
                 elif choice == '13':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_minecraft_username(username) else Fore.RED + "[✗]" + Fore.RESET, f"Minecraft Username: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_minecraft_username(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Minecraft Username: {username}")
                 elif choice == '14':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_fiverr(username) else Fore.RED + "[✗]" + Fore.RESET, f"Fiverr: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_fiverr(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Fiverr: {username}")
                 elif choice == '15':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_modrinth(username) else Fore.RED + "[✗]" + Fore.RESET, f"Modrinth: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_modrinth(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Modrinth: {username}")
                 elif choice == '16':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_chess(username) else Fore.RED + "[✗]" + Fore.RESET, f"Chess.com: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_chess(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Chess.com: {username}")
                 elif choice == '17':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_lichess(username) else Fore.RED + "[✗]" + Fore.RESET, f"Lichess: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_lichess(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Lichess: {username}")
                 elif choice == '18':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_tryhackme(username) else Fore.RED + "[✗]" + Fore.RESET, f"TryHackMe: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_tryhackme(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"TryHackMe: {username}")
                 elif choice == '19':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_hypixel_forums(username) else Fore.RED + "[✗]" + Fore.RESET, f"Hypixel Forums: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_hypixel_forums(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Hypixel Forums: {username}")
                 elif choice == '20':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_letterboxd(username) else Fore.RED + "[✗]" + Fore.RESET, f"Letterboxd: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_letterboxd(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Letterboxd: {username}")
                 elif choice == '21':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_buymeacoffee(username) else Fore.RED + "[✗]" + Fore.RESET, f"Buy Me a Coffee: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_buymeacoffee(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Buy Me a Coffee: {username}")
                 elif choice == '22':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_dailymotion(username) else Fore.RED + "[✗]" + Fore.RESET, f"DailyMotion: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_dailymotion(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"DailyMotion: {username}")
                 elif choice == '23':
-                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_scratch(username) else Fore.RED + "[✗]" + Fore.RESET, f"Scratch: {username}")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_scratch(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Scratch: {username}")
                 elif choice == '24':
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_dockerhub(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Docker Hub: {username}")
+                elif choice == '25':
                     check_all(username)
         else:
             print("Invalid input.")
