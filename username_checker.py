@@ -254,6 +254,13 @@ def check_dockerhub(username):
     r = requests.get(url)
     return r.status_code == 404 and r.json().get("message") == "User not found"
 
+def check_monkeytype(username):
+    url = f"https://api.monkeytype.com/users/checkName/{username}"
+    r = requests.get(url)
+    if r.ok:
+        return r.json().get("data", {}).get("available") == True
+    return False
+
 def check_all_old(username):
     results = {
         "Discord": check_discord(username),
@@ -299,6 +306,7 @@ def check_all(username):
         "DailyMotion": check_dailymotion,
         "Scratch": check_scratch,
         "Docker Hub": check_dockerhub,
+        "MonkeyType": check_monkeytype,
     }
 
     with ThreadPoolExecutor(max_workers=len(checks)) as executor: # this just pings every api and prints the first to respond
@@ -353,15 +361,16 @@ def main():
         print("22. DailyMotion")
         print("23. Scratch (mit.edu)")
         print("24. Docker Hub")
-        print("25. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("26. Exit")
-        choice = input("Choose an option (1-26): ").strip()
+        print("25. MonkeyType")
+        print("26. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("27. Exit")
+        choice = input("Choose an option (1-27): ").strip()
 
-        if choice == '26':
+        if choice == '27':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 26)): # the /back and single api choices
+        if choice in map(str, range(1, 27)): # the /back and single api choices
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -419,6 +428,8 @@ def main():
                 elif choice == '24':
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_dockerhub(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Docker Hub: {username}")
                 elif choice == '25':
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_monkeytype(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"MonkeyType: {username}")
+                elif choice == '26':
                     check_all(username)
         else:
             print("Invalid input.")
