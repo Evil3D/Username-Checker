@@ -24,6 +24,9 @@ In other words:
 
 As a result, the tool effectively reports *every username* as taken, **regardless of reality. That isn’t unreliable - it’s structurally incorrect**.
 
+
+Anyways here's the [Latest Release](https://github.com/Evil3D/Username-Checker/releases/tag/latest).
+
 ---
 
 ## Why profile lookup is the wrong approach
