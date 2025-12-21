@@ -236,6 +236,17 @@ def check_buymeacoffee(username):
         return r.json().get("data", {}).get("available") == True
     return False
     
+def check_dailymotion(username):
+    url = f"https://api.dailymotion.com/user/{username}"
+    r = requests.get(url)
+    return r.status_code == 404 and r.json().get("error", {}).get("code") == 404
+
+def check_scratch(username):
+    url = f"https://api.scratch.mit.edu/accounts/checkusername/{username}"
+    r = requests.get(url)
+    if r.ok:
+        return r.json().get("msg") == "valid username"
+    return False
 
 def check_all_old(username):
     results = {
@@ -279,6 +290,8 @@ def check_all(username):
         "Hypixel Forums": check_hypixel_forums,
         "Letterboxd": check_letterboxd,
         "Buy Me a Coffee": check_buymeacoffee,
+        "DailyMotion": check_dailymotion,
+        "Scratch": check_scratch,
     }
 
     with ThreadPoolExecutor(max_workers=len(checks)) as executor:
@@ -301,7 +314,9 @@ def check_all(username):
 def main():
     while True:
         print("\n--- Username Checker ---")
-        print("FYI: this username checker uses SignUp API Endpoints (mostly), therefore it may say that the username is taken/unavailable, when the user profile for said username doesn't exist.")
+        print("FYI: this username checker uses SignUp API Endpoints (mostly),")
+        print("therefore it may say that the username is taken/unavailable,")
+        print("when the user profile for said username doesn't exist.")
         print("1. Discord")
         print("2. Roblox")
         print("3. Neocities")
@@ -323,15 +338,17 @@ def main():
         print("19. Hypixel Forums")
         print("20. Letterboxd")
         print("21. Buy Me a Coffee")
-        print("22. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("23. Exit")
-        choice = input("Choose an option (1-23): ").strip()
+        print("22. DailyMotion")
+        print("23. Scratch (mit.edu)")
+        print("24. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("25. Exit")
+        choice = input("Choose an option (1-25): ").strip()
 
-        if choice == '23':
+        if choice == '25':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 23)):
+        if choice in map(str, range(1, 25)):
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -383,6 +400,10 @@ def main():
                 elif choice == '21':
                     print(Fore.GREEN + "[✓]" + Fore.RESET if check_buymeacoffee(username) else Fore.RED + "[✗]" + Fore.RESET, f"Buy Me a Coffee: {username}")
                 elif choice == '22':
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_dailymotion(username) else Fore.RED + "[✗]" + Fore.RESET, f"DailyMotion: {username}")
+                elif choice == '23':
+                    print(Fore.GREEN + "[✓]" + Fore.RESET if check_scratch(username) else Fore.RED + "[✗]" + Fore.RESET, f"Scratch: {username}")
+                elif choice == '24':
                     check_all(username)
         else:
             print("Invalid input.")
