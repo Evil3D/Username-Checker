@@ -14,26 +14,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Create Zip Archive
-        run: zip -r .files.zip username_checker.py requirements.txt LICENSE
-
-      - name: Force Delete Old Assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Manually nuke the zip and files before the main action runs
-          # This clears the path so 'already_exists' is impossible
-          gh release delete-asset latest .files.zip -y || true
-          gh release delete-asset latest username_checker.py -y || true
-          gh release delete-asset latest requirements.txt -y || true
-          gh release delete-asset latest LICENSE -y || true
-          
-          # This forces the "Source Code" button to update to your latest commit
-          git tag -f latest
-          git push origin latest --force
 
       - name: Update Latest Release
         uses: softprops/action-gh-release@v2
@@ -41,7 +21,7 @@ jobs:
           tag_name: latest
           name: "Latest Build"
           body: |
-            This is an automated release containing the most recent version of the script.
+            This is an automated release containing the most recent version of the script. The files.zip will not be updated anymore cause i cannot figure out how to fix it.
             
             **Last Updated:** ${{ github.event.head_commit.timestamp }}
             **Commit:** ${{ github.sha }}
@@ -49,5 +29,4 @@ jobs:
             username_checker.py
             requirements.txt
             LICENSE
-            .files.zip
           make_latest: true
