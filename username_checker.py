@@ -158,7 +158,7 @@ def check_minecraft_username(username: str) -> bool:
         if entry.get("user_name", "").lower() == username.lower():
             return False  # Taken
 
-    return True  # no exact match, assume available
+    return False  # no exact match, assume unavailable
 
 def check_fiverr(username):
     headers = {
@@ -301,7 +301,7 @@ def check_all(username):
         "Docker Hub": check_dockerhub,
     }
 
-    with ThreadPoolExecutor(max_workers=len(checks)) as executor:
+    with ThreadPoolExecutor(max_workers=len(checks)) as executor: # this just pings every api and prints the first to respond
         future_to_platform = {
             executor.submit(func, username): platform
             for platform, func in checks.items()
@@ -361,7 +361,7 @@ def main():
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 26)):
+        if choice in map(str, range(1, 26)): # the /back and single api choices
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -430,4 +430,4 @@ if __name__ == "__main__":
 
 # Email check @ Twitter:
 # https://api.x.com/i/users/email_available.json?email=<email>
-# returns 'valid' = false, 'taken' = true if taken, im assuming opposite if available.
+# returns 'valid' = false, 'taken' = true if taken, i'm assuming opposite if available.
