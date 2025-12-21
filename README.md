@@ -92,7 +92,13 @@ I probably wont do like releases on this unless if it's just the python script, 
 
 Also i think the requests library (``` pip install requests ```) (no it's not, check dependencies) is the only one you need to install so far.  
 
-Oh also this project most likely will never be a publicly accessible website (or something alike) since it'd probably be very prone to timeouts/ratelimits and i dont like caching results (cause real-time results are better, even if slower). Also it's like this so you can run it yourself, also therefore there's not much risk for like my ip (example) to get banned if you like spam one or multiple of the APIs.
+Oh also this project most likely will never be a publicly accessible website (or something alike) since it'd probably be very prone to timeouts/ratelimits and i dont like caching results (cause real-time results are better, even if slower). Also it's like this so you can run it yourself, also therefore there's not much risk for like my ip (example) to get banned if you like spam one or multiple of the APIs.  
+
+---
+
+## TL;DR  
+I made username checker, which uses sign up APIs (or other official username APIs) instead of profile scraping/lookup (unless if that's the only option and i feel like it's accurate enough)  
+It only says available/yes if the username is actually available, anything else - no/unavailable. Also no guessing for availability.  
 
 ---
 
@@ -106,7 +112,8 @@ If ya read to the end, here are all the dependencies: (this exists cause i wante
 ## Quick Start
 (cause why not ig)
 1. Clone the repo. (or just download the uh python script.. actually cloning might be better cause i added a requirements.txt.)
-2. Install dependencies: `pip install requests colorama` (or ``` pip install -r requirements.txt ``` if you cloned the repo)
+2. Install dependencies: `pip install requests colorama` (or ``` pip install -r requirements.txt ``` if you cloned the repo)  
+2.5. **Note for Windows**: If pip doesn't work, try using `py -m pip install -r requirements.txt`.
 3. Run: `python username_checker.py`
 
 ---
