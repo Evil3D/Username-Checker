@@ -78,7 +78,7 @@ If a signup check fails, that’s not treated as “unknown” or guessed - it�
 * No guessing
 * No smoothing
 * No profile scraping unless there is *literally no alternative*
-* If an API changes and breaks, it gets fixed - not hidden
+* If an API changes and breaks, it gets fixed - not hidden.. unless if they make it GraphQL or something alike, then it might get hidden or changed.
 
 This tool prioritizes **truth over UX**, even if that means fewer “yes” results.
 
