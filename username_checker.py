@@ -223,7 +223,7 @@ def check_letterboxd(username):
     url = f"https://letterboxd.com/s/checkusername?q={username}"
     r = requests.get(url)
     if r.ok:
-        return r.json.get("data", {}).get("result") == "AVAILABLE"
+        return r.json().get("data", {}).get("result") == "AVAILABLE"
     return False
 
 def check_buymeacoffee(username):
