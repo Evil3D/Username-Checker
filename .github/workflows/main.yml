@@ -15,6 +15,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Create Zip Archive
+        run: zip -r .files.zip username_checker.py requirements.txt LICENSE
+
       - name: Update Latest Release
         uses: softprops/action-gh-release@v2
         with:
@@ -28,4 +31,6 @@ jobs:
           files: |
             username_checker.py
             requirements.txt
+            LICENSE
+            .files.zip
           make_latest: true
