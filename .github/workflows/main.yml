@@ -1,0 +1,31 @@
+name: Continuous Release
+
+on:
+  push:
+    branches:
+        - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Update Latest Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: "Latest Build"
+          body: |
+            This is an automated release containing the most recent version of the script.
+            
+            **Last Updated:** ${{ github.event.head_commit.timestamp }}
+            **Commit:** ${{ github.sha }}
+          files: |
+            username_checker.py
+            requirements.txt
+          make_latest: true
