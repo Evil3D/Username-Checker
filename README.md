@@ -1,3 +1,8 @@
+# Username Checker 🚀
+![showcase](Showcase.gif)
+
+---
+
 ## Why this tool exists
 
 I originally wanted a simple username lookup tool.
