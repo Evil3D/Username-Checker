@@ -1,4 +1,4 @@
-import requests, datetime, random, xml.etree.ElementTree as ET
+import requests, datetime, random, xml.etree.ElementTree as ET, time
 from concurrent.futures import ThreadPoolExecutor, as_completed # type: ignore
 from colorama import Fore
 
@@ -261,7 +261,7 @@ def check_monkeytype(username):
         return r.json().get("data", {}).get("available") == True
     return False
 
-def check_all_old(username):
+def check_all_old(username): # old check_all, left it in cause why not
     results = {
         "Discord": check_discord(username),
         "Roblox": check_roblox(username),
@@ -309,20 +309,25 @@ def check_all(username):
         "MonkeyType": check_monkeytype,
     }
 
-    with ThreadPoolExecutor(max_workers=len(checks)) as executor: # this just pings every api and prints the first to respond
+    # Starts de clock
+    start_time = time.perf_counter()
+
+    with ThreadPoolExecutor(max_workers=len(checks)) as executor:
         future_to_platform = {
-            executor.submit(func, username): platform
+            executor.submit(func, username): (platform, time.perf_counter())
             for platform, func in checks.items()
         }
 
         for future in as_completed(future_to_platform):
-            platform = future_to_platform[future]
+            platform, task_start = future_to_platform[future]
             try:
                 available = future.result()
+                ms = int((time.perf_counter() - task_start) * 1000) # platform time calculation, fyi no response time calc for single api calls cause i just dont wanna spam it that much (code-wise)
+                
                 if available:
-                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f"{platform}: '{username}' is Available")
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f" {platform}: '{username}' is Available ({ms}ms)")
                 else:
-                    print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f"{platform}: '{username}' is Unavailable")
+                    print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable ({ms}ms)")
             except Exception as e:
                 print(f"[!] {platform}: error ({e})")
 
