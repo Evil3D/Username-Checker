@@ -1,4 +1,4 @@
-import requests, datetime, random, xml.etree.ElementTree as ET, time
+import requests, datetime, random, xml.etree.ElementTree as ET, time, os
 from concurrent.futures import ThreadPoolExecutor, as_completed # type: ignore
 from colorama import Fore
 
@@ -8,6 +8,9 @@ def generate_random_birthday():
     day = random.randint(1, 28)
     dt = datetime.datetime(year, month, day, random.randint(0, 23), random.randint(0, 59), random.randint(0, 59))
     return dt.isoformat(timespec='milliseconds') + 'Z'
+
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def check_discord(username):
     url = 'https://discord.com/api/v9/unique-username/username-attempt-unauthed'
@@ -264,6 +267,13 @@ def check_monkeytype(username):
         return r.json().get("data", {}).get("available") == True
     return False
 
+def check_shopify_domain_name(username): # cause why not
+    url = f"https://app.shopify.com/services/signup/check_availability.json?shop_name={username}"
+    r = requests.get(url)
+    if r.ok:
+        return r.json().get ("status") == "available"
+    return False
+
 def check_all_old(username): # old check_all, left it in cause why not
     results = {
         "Discord": check_discord(username),
@@ -310,6 +320,7 @@ def check_all(username):
         "Scratch": check_scratch,
         "Docker Hub": check_dockerhub,
         "MonkeyType": check_monkeytype,
+        "Shopify Domain": check_shopify_domain_name,
     }
 
     # Starts de clock
@@ -380,15 +391,16 @@ def main():
         print("23. Scratch (mit.edu)")
         print("24. Docker Hub")
         print("25. MonkeyType")
-        print("26. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("27. Exit")
-        choice = input("Choose an option (1-27): ").strip()
+        print("26. Shopify Domain <- <username>.myshopify.com")
+        print("27. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("28. Exit")
+        choice = input("Choose an option (1-28): ").strip()
 
-        if choice == '27':
+        if choice == '28':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 27)): # the /back and single api choices
+        if choice in map(str, range(1, 28)): # the /back and single api choices
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -448,12 +460,19 @@ def main():
                 elif choice == '25':
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_monkeytype(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"MonkeyType: {username}")
                 elif choice == '26':
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_shopify_domain_name(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Shopify Domain: {username}")
+                elif choice == '27':
                     check_all(username)
         else:
             print("Invalid input.")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        clear_console()
+        import sys
+        sys.exit(0)
 
 
 
