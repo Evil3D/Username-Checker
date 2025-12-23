@@ -474,8 +474,6 @@ if __name__ == "__main__":
         import sys
         sys.exit(0)
 
-
-
 # Email check @ Twitter:
 # https://api.x.com/i/users/email_available.json?email=<email>
 # returns 'valid' = false, 'taken' = true if taken, i'm assuming opposite if available.
