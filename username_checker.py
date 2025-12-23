@@ -250,7 +250,10 @@ def check_scratch(username):
     return False
 
 def check_dockerhub(username):
-    url = f"https://hub.docker.com/v2/users/{username}"
+    normalized_name = username.lower()
+    if not normalized_name.isalnum() or len(normalized_name) < 4:
+        return False # cause anything under 4 letters will always return not found and therefore be marked as available.
+    url = f"https://hub.docker.com/v2/users/{normalized_name}" # also seems like this is the only website which actually doesnt convert the username itself.
     r = requests.get(url)
     return r.status_code == 404 and r.json().get("message") == "User not found"
 
@@ -375,7 +378,7 @@ def main():
         print("21. Buy Me a Coffee")
         print("22. DailyMotion")
         print("23. Scratch (mit.edu)")
-        print("24. Docker Hub <- so uh the check is case sensitive, example: 'Evil' returns available, 'evil' doesn't, although u cant get 'Evil'.")
+        print("24. Docker Hub")
         print("25. MonkeyType")
         print("26. Check ALL (Ordered by response latency, Fastest -> Slowest)")
         print("27. Exit")
