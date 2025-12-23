@@ -325,9 +325,19 @@ def check_all(username):
                 ms = int((time.perf_counter() - task_start) * 1000) # platform time calculation, fyi no response time calc for single api calls cause i just dont wanna spam it that much (code-wise)
                 
                 if available:
-                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f" {platform}: '{username}' is Available ({ms}ms)")
+                    if ms <= 600: # 600 ms or less is fast no? well depends ig
+                        print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f" {platform}: '{username}' is Available (" + Fore.LIGHTCYAN_EX + f"{ms}ms" + Fore.RESET + ")")
+                    elif ms >= 1100: # i assume 1100 ms to be slow
+                        print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f" {platform}: '{username}' is Available (" + Fore.LIGHTYELLOW_EX + f"{ms}ms" + Fore.RESET + ")")
+                    else:
+                        print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET + f" {platform}: '{username}' is Available ({ms}ms)")
                 else:
-                    print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable ({ms}ms)")
+                    if ms <= 500:
+                        print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable (" + Fore.LIGHTCYAN_EX + f"{ms}ms" + Fore.RESET + ")")
+                    elif ms >= 1500:
+                        print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable (" + Fore.LIGHTYELLOW_EX + f"{ms}ms" + Fore.RESET + ")")
+                    else:
+                        print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable ({ms}ms)")
             except Exception as e:
                 print(f"[!] {platform}: error ({e})")
 
@@ -365,7 +375,7 @@ def main():
         print("21. Buy Me a Coffee")
         print("22. DailyMotion")
         print("23. Scratch (mit.edu)")
-        print("24. Docker Hub")
+        print("24. Docker Hub <- so uh the check is case sensitive, example: 'Evil' returns available, 'evil' doesn't, although u cant get 'Evil'.")
         print("25. MonkeyType")
         print("26. Check ALL (Ordered by response latency, Fastest -> Slowest)")
         print("27. Exit")
