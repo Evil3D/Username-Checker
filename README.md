@@ -102,6 +102,8 @@ Also i think the requests library (``` pip install requests ```) (no it's not, c
 
 Oh also this project most likely will never be a publicly accessible website (or something alike) since it'd probably be very prone to timeouts/ratelimits and i dont like caching results (cause real-time results are better, even if slower). Also it's like this so you can run it yourself, also therefore there's not much risk for like my ip (example) to get banned if you like spam one or multiple of the APIs.  
 
+if u want here's a [exposee markdown file](https://github.com/Evil3D/Username-Checker/blob/main/Exposees.md) which i may update occaisionally(mb if i misspelled)
+
 ---
 
 ## TL;DR  
