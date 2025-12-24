@@ -27,7 +27,7 @@ def check_discord(username):
     return False
 
 def check_roblox(username: str) -> bool:
-    url = 'https://auth.roblox.com/v1/usernames/validate'
+    url = 'https://auth.roblox.com/v2/usernames/validate'
     session = requests.Session()
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -51,7 +51,7 @@ def check_roblox(username: str) -> bool:
             if r2.ok:
                 data = r2.json()
                 # check for availability if success with token
-                return data.get("code") == 0
+                return data.get("code") == 0 # codes: 0 - available; 1 - unavailable/in use; 2 - inappropriate username; 3 - too short/long, 3-20 chars; 7 - illegal chars, Only a-z, A-Z, 0-9, and _ are allowed; 10 - apparently is the rate-limit code, haven't come across it yet; nested 1 - invalid username, such as setting it to anything but a string or number (treats numbers as strings, idk why)
 
         # retry incase token failed
     return False
