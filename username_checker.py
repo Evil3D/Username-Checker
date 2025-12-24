@@ -2,6 +2,8 @@ import requests, datetime, random, xml.etree.ElementTree as ET, time, os
 from concurrent.futures import ThreadPoolExecutor, as_completed # type: ignore
 from colorama import Fore
 
+# Ello dis script is mad by Evil3D on github :D
+
 def generate_random_birthday():
     year = random.randint(1950, 2005)
     month = random.randint(1, 12)
@@ -497,7 +499,7 @@ def main():
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_shopify_domain_name(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Shopify Domain: {username}")
                 elif choice == '27':
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_instagram_user(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Instagram: {username}")
-                elif choice == '287':
+                elif choice == '28':
                     check_all(username)
         else:
             print("Invalid input.")
