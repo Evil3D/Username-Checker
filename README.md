@@ -27,10 +27,8 @@ This endpoint returns the **same response** for:
 In other words:
 **it cannot distinguish between “claimable” and “not claimable”.**
 
-As a result, the tool effectively reports *every username* as taken, **regardless of reality. That isn’t unreliable - it’s structurally incorrect**.
-
-
-Anyways here's the [Latest Release](https://github.com/Evil3D/Username-Checker/releases/tag/latest).
+As a result, the tool effectively reports *every Roblox username* as taken, **regardless of reality. That isn’t unreliable - it’s structurally incorrect**.
+But it isn't that bad if you don't mind some of the websites almost always returning 'unknown' or false positives/negatives, it's fast.
 
 ---
 
