@@ -355,7 +355,7 @@ def check_all(username):
         "Docker Hub": check_dockerhub,
         "MonkeyType": check_monkeytype,
         "Shopify Domain": check_shopify_domain_name,
-        "Instragam": check_instagram_user,
+        "Instagram": check_instagram_user,
     }
 
     # Starts de clock
@@ -427,7 +427,7 @@ def main():
         print("24. Docker Hub")
         print("25. MonkeyType")
         print("26. Shopify Domain <- <username>.myshopify.com")
-        print("27. Instragram <- Mostly will be accurate, could be false for private/admin accounts.")
+        print("27. Instagram <- Mostly will be accurate, could be false for private/admin accounts.")
         print("28. Check ALL (Ordered by response latency, Fastest -> Slowest)")
         print("29. Exit")
         choice = input("Choose an option (1-29): ").strip()
