@@ -274,6 +274,38 @@ def check_shopify_domain_name(username): # cause why not
         return r.json().get ("status") == "available"
     return False
 
+def check_instagram_user(username): # Somewhat reliable, somewhat not, better than nothin', 'cause this is all i got :D Actually seems to be surprisingly accurate, more accurate than i thought it'd be ngl.
+    headers = {"User-Agent": "Instagram 219.0.0.12.117 Android (24/7.0; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US; 138226743)"}
+    url = f"https://www.instagram.com/api/v1/feed/user/{username}/username/?count=12"
+    r = requests.get(url, headers=headers)
+
+    if r.status_code == 400:
+        try:
+            error_data = r.json()
+            if "user is null" in error_data.get("message", ""):
+                return False 
+        except:
+            pass
+        return False
+
+    if not r.ok: return False 
+
+    res = r.json()
+    items = res.get("items")
+
+    if res.get("status") == "ok" and not items:
+        return True
+
+    if items:
+        first_post = items[0] or {}
+        caption = first_post.get("caption") or {}
+        remote_name = caption.get("user", {}).get("username", "").lower()
+        
+        if remote_name == username.lower():
+            return False
+
+    return False
+
 def check_all_old(username): # old check_all, left it in cause why not
     results = {
         "Discord": check_discord(username),
@@ -321,6 +353,7 @@ def check_all(username):
         "Docker Hub": check_dockerhub,
         "MonkeyType": check_monkeytype,
         "Shopify Domain": check_shopify_domain_name,
+        "Instragam": check_instagram_user,
     }
 
     # Starts de clock
@@ -392,15 +425,16 @@ def main():
         print("24. Docker Hub")
         print("25. MonkeyType")
         print("26. Shopify Domain <- <username>.myshopify.com")
-        print("27. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("28. Exit")
-        choice = input("Choose an option (1-28): ").strip()
+        print("27. Instragram <- Mostly will be accurate, could be false for private/admin accounts.")
+        print("28. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("29. Exit")
+        choice = input("Choose an option (1-29): ").strip()
 
-        if choice == '28':
+        if choice == '29':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 28)): # the /back and single api choices
+        if choice in map(str, range(1, 29)): # the /back and single api choices
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -462,6 +496,8 @@ def main():
                 elif choice == '26':
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_shopify_domain_name(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Shopify Domain: {username}")
                 elif choice == '27':
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_instagram_user(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Instagram: {username}")
+                elif choice == '287':
                     check_all(username)
         else:
             print("Invalid input.")
