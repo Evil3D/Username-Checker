@@ -1,4 +1,4 @@
-import requests, datetime, random, xml.etree.ElementTree as ET, time, os
+import requests, datetime, random, xml.etree.ElementTree as ET, time, os, string
 from concurrent.futures import ThreadPoolExecutor, as_completed # type: ignore
 from colorama import Fore
 
@@ -276,35 +276,65 @@ def check_shopify_domain_name(username): # cause why not
         return r.json().get ("status") == "available"
     return False
 
-def check_instagram_user(username): # Somewhat reliable, somewhat not, better than nothin', 'cause this is all i got :D Actually seems to be surprisingly accurate, more accurate than i thought it'd be ngl.
+def check_instagram_user(username): # HOLY CHECK, if this isnt 100% accurate then idk what is, the 2nd method incase the signup api tells u to fuck off isnt nearly as accurate as the sign up api is ofc
+    def generate_csrf():
+        chars = string.ascii_letters + string.digits
+        return ''.join(random.choice(chars) for _ in range(32))
+    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (lasts either a day or a few hrs idk)
+        signup_url = "https://www.instagram.com/api/v1/web/accounts/web_create_ajax/attempt/"
+
+        fake_token = generate_csrf()
+        
+        signup_headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "X-CSRFToken": fake_token,
+            "X-IG-App-ID": "936619743392459",
+            "X-ASBD-ID": "129477",
+            "X-Requested-With": "XMLHttpRequest",
+            "Referer": "https://www.instagram.com/accounts/emailsignup/",
+            "Origin": "https://www.instagram.com"
+        }
+        
+        signup_data = {
+            "email": "",
+            "username": username,
+            "first_name": "",
+            "opt_into_one_tap": "false"
+        }
+        
+        r = requests.post(signup_url, data=signup_data, headers=signup_headers, timeout=5)
+        
+        if r.ok:
+            res = r.json()
+            if res.get("spam"): # incase u are blocked, fallback to the mobile api
+                raise Exception("Spam block hit")
+
+            errors = res.get("errors", {})
+            if "username" not in errors:
+                return True
+
+            username_errors = errors.get("username", [{}])
+            code = username_errors[0].get("code")
+            if code in ["username_is_taken", "username_invalid"]:
+                return False
+
+    except Exception:
+        pass # incase signup api tells u to fuck off, use the mobile api, not as accurate, especially for taken/hidden usernames
+
     headers = {"User-Agent": "Instagram 219.0.0.12.117 Android (24/7.0; 640dpi; 1440x2560; samsung; SM-G930F; herolte; samsungexynos8890; en_US; 138226743)"}
-    url = f"https://www.instagram.com/api/v1/feed/user/{username}/username/?count=12"
+    usernamel = username.lower()
+    url = f"https://www.instagram.com/api/v1/feed/user/{usernamel}/username/?count=12"
     r = requests.get(url, headers=headers)
 
-    if r.status_code == 400:
-        try:
-            error_data = r.json()
-            if "user is null" in error_data.get("message", ""):
-                return False 
-        except:
-            pass
+    if len(username) < 4:
         return False
 
-    if not r.ok: return False 
+    if r.status_code == 400:
+        return False
 
-    res = r.json()
-    items = res.get("items")
-
-    if res.get("status") == "ok" and not items:
-        return True
-
-    if items:
-        first_post = items[0] or {}
-        caption = first_post.get("caption") or {}
-        remote_name = caption.get("user", {}).get("username", "").lower()
-        
-        if remote_name == username.lower():
-            return False
+    if r.ok:
+        res = r.json()
+        return res.get("status") == "ok" and not res.get("items")
 
     return False
 
@@ -427,7 +457,7 @@ def main():
         print("24. Docker Hub")
         print("25. MonkeyType")
         print("26. Shopify Domain <- <username>.myshopify.com")
-        print("27. Instagram <- Mostly will be accurate, could be false for private/admin accounts.")
+        print("27. Instagram <- Now using the SignUp API :D, if inaccurate, most likely the SignUp API got mad")
         print("28. Check ALL (Ordered by response latency, Fastest -> Slowest)")
         print("29. Exit")
         choice = input("Choose an option (1-29): ").strip()
