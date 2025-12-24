@@ -280,7 +280,7 @@ def check_instagram_user(username): # HOLY CHECK, if this isnt 100% accurate the
     def generate_csrf():
         chars = string.ascii_letters + string.digits
         return ''.join(random.choice(chars) for _ in range(32))
-    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (lasts either a day or a few hrs idk)
+    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (so yea a few hrs, i was unblocked after about 5 hrs (i only checked after the 5 hours, never during them, might've been unblocked sooner)
         signup_url = "https://www.instagram.com/api/v1/web/accounts/web_create_ajax/attempt/"
 
         fake_token = generate_csrf()
