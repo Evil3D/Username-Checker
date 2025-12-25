@@ -39,7 +39,7 @@ Profile-based username checks are fundamentally flawed because:
 * Websites can (and do) return false responses when they detect scraping
 * Profile pages often return identical responses for multiple states
 * Existence ≠ availability (terminated, reserved, blocked, etc.)
-* You cannot verify whether the site is telling the truth
+* You cannot verify whether the site is telling the truth (well yes you can.. compare the profile lookup data to what the signup api says (or if profile scraping is like the only option and the signup api gives the same response.. then yea you can verify))
 * Weeeeelll sometimes it's better than trying to reverse-engineer a signup api which won't budge. (maybe even more accurate than using a half-working signup api thing)
 
 If an endpoint cannot *theoretically* differentiate between states, no amount of retries or proxying will fix that.
