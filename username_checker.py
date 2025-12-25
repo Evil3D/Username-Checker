@@ -1,4 +1,4 @@
-import requests, datetime, random, xml.etree.ElementTree as ET, time, os, string
+import requests, datetime, random, xml.etree.ElementTree as ET, time, os, string, re
 from concurrent.futures import ThreadPoolExecutor, as_completed # type: ignore
 from colorama import Fore
 
@@ -15,6 +15,12 @@ def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def check_discord(username):
+    # checks so u dont spend your rate limit time :D
+    if not (2 <= len(username) <= 32): return False
+    if username.lower() in ['everyone', 'here', 'system message']: return False
+    if 'discord' in username.lower(): return False
+    if re.search(r'[@#:]', username) or '```' in username: return False
+    
     url = 'https://discord.com/api/v9/unique-username/username-attempt-unauthed'
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -27,6 +33,8 @@ def check_discord(username):
     return False
 
 def check_roblox(username: str) -> bool:
+    # Checks
+    if not re.fullmatch(r'[A-Za-z0-9]([A-Za-z0-9]*_?[A-Za-z0-9]*)', username) or not (3 <= len(username) <= 20): return False
     url = 'https://auth.roblox.com/v2/usernames/validate'
     session = requests.Session()
     headers = {
@@ -147,6 +155,7 @@ def check_steam_group(username: str) -> bool:
     return False  # fallback incase XML is weird
 
 def check_minecraft_username(username: str) -> bool:
+    if not re.fullmatch(r'[A-Za-z0-9_]*', username) or not (3 <= len(username) <= 16): return False
     headers = {
         "User-Agent": "Mozilla/5.0"
     }
@@ -277,10 +286,11 @@ def check_shopify_domain_name(username): # cause why not
     return False
 
 def check_instagram_user(username): # HOLY CHECK, if this isnt 100% accurate then idk what is, the 2nd method incase the signup api tells u to fuck off isnt nearly as accurate as the sign up api is ofc
+    if not re.fullmatch(r'(?!^\d+$)[A-Za-z0-9_]([A-Za-z0-9_.]*[A-Za-z0-9_])?', username) or not (1 <= len(username) <= 30): return False
     def generate_csrf():
         chars = string.ascii_letters + string.digits
         return ''.join(random.choice(chars) for _ in range(32))
-    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (so yea a few hrs, i was unblocked after about 5 hrs (i only checked after the 5 hours, never during them, might've been unblocked sooner)
+    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (lasts either a day or a few hrs idk)
         signup_url = "https://www.instagram.com/api/v1/web/accounts/web_create_ajax/attempt/"
 
         fake_token = generate_csrf()
@@ -326,9 +336,6 @@ def check_instagram_user(username): # HOLY CHECK, if this isnt 100% accurate the
     url = f"https://www.instagram.com/api/v1/feed/user/{usernamel}/username/?count=12"
     r = requests.get(url, headers=headers)
 
-    if len(username) < 4:
-        return False
-
     if r.status_code == 400:
         return False
 
@@ -336,6 +343,24 @@ def check_instagram_user(username): # HOLY CHECK, if this isnt 100% accurate the
         res = r.json()
         return res.get("status") == "ok" and not res.get("items")
 
+    return False
+
+def check_gunslol(username): # WE INSPECTIN THE HTML FOR DIT 1 :D, mostly accurate.
+    headers = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0"} # why not
+    foundM = 0
+    url = f"https://guns.lol/{username}"
+    r = requests.get(url, headers=headers)
+    if r.ok:
+        hopeitworks_markers = [ # looks like it does yay :D
+            ">Username not found</h1><h3 class=",
+            ">Claim this username by clicking on the button below!</h3><div class=",
+            f' href="/register?claim={username}&amp;ref=claim_user_page">Claim Now!</a></div></div></div></div><!--$--><!--/$--><script src=',
+            f'href="/register?claim={username}&amp;ref=claim_user_page">Claim Now!</a></div></div></div></div><!--$--><!--/$--><script src=' # cause yes yea hiearchy cause this has usernam
+        ]
+        for marker in hopeitworks_markers:
+            if marker in r.text:
+                foundM += 0.5
+        return foundM >= 1.5 # means if the username register thing doesnt exist, then return false, if it does, then any of the other 2 can not exist and it'd still return true.
     return False
 
 def check_all_old(username): # old check_all, left it in cause why not
@@ -386,6 +411,7 @@ def check_all(username):
         "MonkeyType": check_monkeytype,
         "Shopify Domain": check_shopify_domain_name,
         "Instagram": check_instagram_user,
+        "Guns.lol": check_gunslol,
     }
 
     # Starts de clock
@@ -413,7 +439,7 @@ def check_all(username):
                 else:
                     if ms <= 500:
                         print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable (" + Fore.LIGHTCYAN_EX + f"{ms}ms" + Fore.RESET + ")")
-                    elif ms >= 1500:
+                    elif ms >= 1100:
                         print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable (" + Fore.LIGHTYELLOW_EX + f"{ms}ms" + Fore.RESET + ")")
                     else:
                         print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable ({ms}ms)")
@@ -458,15 +484,16 @@ def main():
         print("25. MonkeyType")
         print("26. Shopify Domain <- <username>.myshopify.com")
         print("27. Instagram <- Now using the SignUp API :D, if inaccurate, most likely the SignUp API got mad")
-        print("28. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("29. Exit")
-        choice = input("Choose an option (1-29): ").strip()
+        print("28. Guns.lol")
+        print("29. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("30. Exit")
+        choice = input("Choose an option (1-30): ").strip()
 
-        if choice == '29':
+        if choice == '30':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 29)): # the /back and single api choices
+        if choice in map(str, range(1, 30)): # the /back and single api choices
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -530,6 +557,8 @@ def main():
                 elif choice == '27':
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_instagram_user(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Instagram: {username}")
                 elif choice == '28':
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_gunslol(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Guns.lol: {username}")
+                elif choice == '29':
                     check_all(username)
         else:
             print("Invalid input.")
