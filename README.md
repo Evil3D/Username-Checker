@@ -32,7 +32,7 @@ But it isn't that bad if you don't mind some of the websites almost always retur
 
 ---
 
-## Why profile lookup is the wrong approach
+## Why profile lookup is the wrong approach (mostly)
 
 Profile-based username checks are fundamentally flawed because:
 
@@ -40,6 +40,7 @@ Profile-based username checks are fundamentally flawed because:
 * Profile pages often return identical responses for multiple states
 * Existence ≠ availability (terminated, reserved, blocked, etc.)
 * You cannot verify whether the site is telling the truth
+* Weeeeelll sometimes it's better than trying to reverse-engineer a signup api which won't budge. (maybe even more accurate than using a half-working signup api thing)
 
 If an endpoint cannot *theoretically* differentiate between states, no amount of retries or proxying will fix that.
 
