@@ -16,10 +16,7 @@ def clear_console():
 
 def check_discord(username):
     # checks so u dont spend your rate limit time :D
-    if not (2 <= len(username) <= 32): return False
-    if username.lower() in ['everyone', 'here', 'system message']: return False
-    if 'discord' in username.lower(): return False
-    if re.search(r'[@#:]', username) or '```' in username: return False
+    if not (2 <= len(username) <= 32) or username.lower() in ['everyone', 'here', 'system message'] or 'discord' in username.lower() or re.search(r'[@#:]', username) or '```' in username: return False
     
     url = 'https://discord.com/api/v9/unique-username/username-attempt-unauthed'
     headers = {
@@ -290,7 +287,7 @@ def check_instagram_user(username): # HOLY CHECK, if this isnt 100% accurate the
     def generate_csrf():
         chars = string.ascii_letters + string.digits
         return ''.join(random.choice(chars) for _ in range(32))
-    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (so yea a few hrs, i was unblocked after about 5 hrs (i only checked after the 5 hours, never during them, might've been unblocked sooner)
+    try: # signup api, with randomized csrf token, still a good chance u might get rate limited (so yea a few hrs, i was unblocked after about 5 hrs (i only checked after the 5 hours, never during them, might've been unblocked sooner))
         signup_url = "https://www.instagram.com/api/v1/web/accounts/web_create_ajax/attempt/"
 
         fake_token = generate_csrf()
