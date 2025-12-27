@@ -72,6 +72,7 @@ def check_neocities(username):
     return False
 
 def check_github(username):
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9-]*', username) or not (1 <= len(username) <= 39): return False
     url = f"https://github.com/signup_check/username?value={username}"
     r = requests.get(url)
     return r.status_code == 200 and f"{username} is available" in r.text
@@ -82,10 +83,11 @@ def check_devto(username):
     return r.status_code == 404
 
 def check_replit(username):
-    if not re.fullmatch(r'[A-Za-z0-9]') or not (4 <= len(username) <= 100): return False
-    url = f"https://replit.com/@{username}"
-    r = requests.get(url)
-    return r.status_code == 404
+    if not re.fullmatch(r'[A-Za-z0-9]+', username) or not (4 <= len(username) <= 100): return False
+    #url = f"https://replit.com/@{username}"; r = requests.get(url); return r.status_code == 404 <- old check, works probably as well as the normal api
+    url = "https://replit.com/data/user/exists"; payload = {"username": username}; headers = {"Origin": "https://replit.com", "X-Requested-With": "XMLHttpRequest"}
+    r = requests.post(url, json=payload, headers=headers)
+    return r.json().get("exists") == False
 
 def check_gitlab(username):
     if not re.fullmatch(r'[a-z0-9._-]+', username.lower()) or not (2 <= len(username) <= 255) or username[0] in '_-.' or username.endswith('.') or username.lower().endswith(('.git', '.atom', '.png')): return False
@@ -126,6 +128,7 @@ def check_steam_vanity(username):
     return False  # taken
 
 def check_twitter_x(username):
+    if not re.fullmatch(r'[A-Za-z0-9_]+', username) or not (4 <= len(username) <= 15): return False # is it 4 or is it 1? i think its 4 rn
     url = f"https://api.x.com/i/users/username_available.json?username={username}"
     r = requests.get(url)
     if r.ok:
@@ -364,6 +367,18 @@ def check_gunslol(username): # WE INSPECTIN THE HTML FOR DIT 1 :D, mostly accura
         return foundM >= 1.5 # means if the username register thing doesnt exist, then return false, if it does, then any of the other 2 can not exist and it'd still return true.
     return False
 
+def check_duckduckgo_email(username): # a kinda niche typa way to check but yea, it works :D
+    if not re.fullmatch(r'[A-Za-z0-9]+', username) or not (3 <= len(username) <= 30): return False
+    payload = {"user": f"{username}", "email": "a", "disable_secure_reply": 1, "dry_run": 1}
+    url = "https://quack.duckduckgo.com/api/auth/signup"
+    try:
+        r = requests.post(url, data=payload)
+        if r.status_code == 400:
+            if r.json().get("error") in ["unavailable_username", "invalid_username"]: return False
+            elif r.json().get("error") in ["unavailable_email_address", "invalid_email_address", "failed_mx_check"]: return True
+        raise Exception(f"{r.status_code}: {r.text}")
+    except Exception as e: return e
+
 def check_all_old(username): # old check_all, left it in cause why not
     results = {
         "Discord": check_discord(username),
@@ -413,6 +428,7 @@ def check_all(username):
         "Shopify Domain": check_shopify_domain_name,
         "Instagram": check_instagram_user,
         "Guns.lol": check_gunslol,
+        "DuckDuckGo Email": check_duckduckgo_email,
     }
 
     # Starts de clock
@@ -445,7 +461,7 @@ def check_all(username):
                     else:
                         print(Fore.LIGHTRED_EX + "[✗]" + Fore.RESET + f" {platform}: '{username}' is Unavailable ({ms}ms)")
             except Exception as e:
-                print(f"[!] {platform}: error ({e})")
+                print(f"[!] {platform}: " + Fore.LIGHTRED_EX + "Error" + Fore.RESET + " (" + Fore.LIGHTRED_EX + f"{e}" + Fore.RESET + ")")
 
 def main():
     while True:
@@ -486,15 +502,16 @@ def main():
         print("26. Shopify Domain <- <username>.myshopify.com")
         print("27. Instagram <- Now using the SignUp API :D, if inaccurate, most likely the SignUp API got mad")
         print("28. Guns.lol")
-        print("29. Check ALL (Ordered by response latency, Fastest -> Slowest)")
-        print("30. Exit")
-        choice = input("Choose an option (1-30): ").strip()
+        print("29. DuckDuckGo Email <- <username>@duck.com")
+        print("30. Check ALL (Ordered by response latency, Fastest -> Slowest)")
+        print("31. Exit")
+        choice = input("Choose an option (1-31): ").strip()
 
-        if choice == '30':
+        if choice == '31':
             print("Exiting...")
             break
 
-        if choice in map(str, range(1, 30)): # the /back and single api choices
+        if choice in map(str, range(1, 31)): # the /back and single api choices
             while True:
                 username = input("Enter username (or '/back' to return): ").strip()
                 if username.lower() == '/back':
@@ -560,6 +577,8 @@ def main():
                 elif choice == '28':
                     print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_gunslol(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"Guns.lol: {username}")
                 elif choice == '29':
+                    print(Fore.LIGHTGREEN_EX + "[✓]" + Fore.RESET if check_duckduckgo_email(username) else Fore.LIGHTRED_EX + "[✗]" + Fore.RESET, f"DuckDuckGo Email: {username}")
+                elif choice == '30':
                     check_all(username)
         else:
             print("Invalid input.")
@@ -572,6 +591,17 @@ if __name__ == "__main__":
         import sys
         sys.exit(0)
 
-# Email check @ Twitter:
-# https://api.x.com/i/users/email_available.json?email=<email>
-# returns 'valid' = false, 'taken' = true if taken, i'm assuming opposite if available.
+
+###################################Hall Of Other Check APIs###################################
+# Email check @ Twitter:                                                                     #
+# GET https://api.x.com/i/users/email_available.json?email=<email>                           #
+# returns 'valid' = false, 'taken' = true if taken, i'm assuming opposite if available.      #
+#                                                                                            #
+# .. twitter why                                                                             #
+# GET https://api.x.com/1.1/users/phone_number_available.json?raw_phone_number=[+]<num>      #
+# returns 'valid' = true, 'available' = true if available/unused for any accounts.           #
+#                                                                                            #
+# POST https://replit.com/data/user/exists, json = {"email": "<email>"},                     #
+# headers = {"Origin": "https://replit.com", "X-Requested-With": "XMLHttpRequest"}           #
+# response: {"exists":<false/true>} <- false - available, true - unavailable                 #
+###################################Hall Of Other Check APIs###################################
