@@ -82,11 +82,13 @@ def check_devto(username):
     return r.status_code == 404
 
 def check_replit(username):
+    if not re.fullmatch(r'[A-Za-z0-9]') or not (4 <= len(username) <= 100): return False
     url = f"https://replit.com/@{username}"
     r = requests.get(url)
     return r.status_code == 404
 
 def check_gitlab(username):
+    if not re.fullmatch(r'[a-z0-9._-]+', username.lower()) or not (2 <= len(username) <= 255) or username[0] in '_-.' or username.endswith('.') or username.lower().endswith(('.git', '.atom', '.png')): return False
     url = f"https://gitlab.com/users/{username}/exists"
     r = requests.get(url)
     if r.ok:
@@ -95,7 +97,8 @@ def check_gitlab(username):
     return False
 
 def check_soundcloud(username):
-    url = f"https://soundcloud.com/{username}"
+    if not re.fullmatch(r'[a-z0-9_-]+', username.lower()) or not 3 <= len(username) <= 25: return False
+    url = f"https://soundcloud.com/{username.lower()}"
     r = requests.get(url)
     return r.status_code == 404
 
@@ -105,6 +108,7 @@ def check_patreon_creator(username):
     return r.status_code == 404
 
 def check_steam_vanity(username):
+    if not (2 <= len(username) <= 32) or '_' in username and len(username) == 2: return False # not the best or worst, couldn't find any official username rules so yea, atleast it's somethin :D
     url = f"https://steamcommunity.com/id/{username}"
     r = requests.get(url)
     if not r.ok:
