@@ -56,7 +56,7 @@ def check_roblox(username: str) -> bool:
             if r2.ok:
                 data = r2.json()
                 # check for availability if success with token
-                return data.get("code") == 0 # codes: 0 - available; 1 - unavailable/in use; 2 - inappropriate username; 3 - too short/long, 3-20 chars; 7 - illegal chars, Only a-z, A-Z, 0-9, and _ are allowed; 10 - apparently is the rate-limit code, haven't come across it yet; nested 1 - invalid username, such as setting it to anything but a string or number (treats numbers as strings, idk why)
+                return data.get("code") == 0 # codes: 0 - available; 1 - unavailable/in use; 2 - inappropriate username; 3 - too short/long, 3-20 chars; 7 - illegal chars, Only a-z, A-Z, 0-9, and _ are allowed; 10 - apparently is the rate-limit code, haven't come across it yet; nested 1 - invalid username, such as setting it to anything but a string or number (treats numbers as strings)
 
         # retry incase token failed
     return False
@@ -110,7 +110,7 @@ def check_patreon_creator(username):
     return r.status_code == 404
 
 def check_steam_vanity(username):
-    if not (2 <= len(username) <= 32) or '_' in username and len(username) == 2: return False # not the best or worst, couldn't find any official username rules so yea, atleast it's somethin :D
+    if not (3 <= len(username) <= 32) or '_' in username and len(username) == 2: return False # not the best or worst, couldn't find any official username rules so yea, atleast it's somethin :D
     url = f"https://steamcommunity.com/id/{username}"
     r = requests.get(url)
     if not r.ok:
@@ -196,7 +196,7 @@ def check_fiverr(username):
 def check_modrinth(username):
     url = f"https://api.modrinth.com/v2/user/{username}"
     r = requests.get(url)
-    return r.status_code == 404
+    return r.status_code == 404 and r.text == ""
 
 def check_chess(username):
     url = f"https://www.chess.com/callback/user/valid?username={username}"
@@ -214,11 +214,12 @@ def check_lichess(username):
     return False
     
 def check_tryhackme(username):
+    if not re.fullmatch(r'[A-Za-z0-9]', username) or not (1 <= len(username) <= 20): return False
     url = f"https://tryhackme.com/api/v2/users/availability?username={username}"
     r = requests.get(url)
     if r.ok:
         data = r.json()
-        return data.get("data", {}).get("available") == True
+        return data.get("data", {}).get("available") == True and data.get("data", {}).get("value") == "username" and data.get("status") == "success"
     return False
 
 def check_hypixel_forums(username):
@@ -256,7 +257,8 @@ def check_buymeacoffee(username):
     return False
     
 def check_dailymotion(username):
-    url = f"https://api.dailymotion.com/user/{username}"
+    if not re.fullmatch(r'[a-z0-9][a-z0-9._]*', username.lower()) or not (3 <= len(username) <= 27): return False
+    url = f"https://api.dailymotion.com/user/{username.lower()}"
     r = requests.get(url)
     return r.status_code == 404 and r.json().get("error", {}).get("code") == 404
 
