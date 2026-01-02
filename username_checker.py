@@ -214,7 +214,7 @@ def check_lichess(username):
     return False
     
 def check_tryhackme(username):
-    if not re.fullmatch(r'[A-Za-z0-9]', username) or not (1 <= len(username) <= 20): return False
+    if not re.fullmatch(r'[A-Za-z0-9]+', username) or not (1 <= len(username) <= 20): return False
     url = f"https://tryhackme.com/api/v2/users/availability?username={username}"
     r = requests.get(url)
     if r.ok:
